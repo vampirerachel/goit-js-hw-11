@@ -1,3 +1,4 @@
+
 import axios from "axios";
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
@@ -8,25 +9,24 @@ const gallery = document.querySelector('.gallery')
 const loadButton = document.querySelector('.load-more')
 const searchButton = document.querySelector("button")
 loadButton.style.display = "none";
-let pageNumber = 1;
-
-
+let pageNumber = 0;
 
 async function getData(e) {
-    
-    gallery.innerHTML = "";
     e.preventDefault()
-    loadButton.style.display = "block"
-    const userSearch = input.value
+    pageNumber++;
+    loadButton.style.display = "block";
+    gallery.innerHTML = "";
+    let userSearch = input.value.trim();
     const res = await axios.get(
     `https://pixabay.com/api/?key=35513783-cdd32f526a75b86a8cfb6c8f5&q=${userSearch}&image_type=photos&orientation=horizontal&safesearch=true&per_page=40&page=${pageNumber}`);
+    
     res.data.hits.forEach(item => {
-    const div = document.createElement('div');
-    div.setAttribute('class', 'photo-container');
-    div.innerHTML =`
+        const div = document.createElement('div');
+        div.setAttribute('class', 'photo-container');
+        div.innerHTML = `
     <div class="photo-card">
         <a href ="${item.webformatURL}" alt="${item.tags}">
-    <img src="${item.webformatURL}" alt="${item.tags}" loading="lazy" /></a>
+    <img src="${item.webformatURL}" alt="${item.tags}" loading="lazy" /></a> 
     <div class="info">
     <p class="info-item">
     <b>Likes: ${item.likes}</b>
@@ -48,7 +48,7 @@ async function getData(e) {
         gallery.style.margin = "0 auto";
         gallery.style.width = "1200px"
         gallery.append(div);
-    })
+    });
     
     let hits = res.data.total
 
@@ -59,14 +59,58 @@ async function getData(e) {
         Notify.info("Sorry, there are no images matching your search query. Please try again.")
 }
 
-
 }
 
 
-function handleSubmit(e) {
-    /* when click on load more then increase page number and call get data*/
+async function handleSubmit(e) {
+
+    e.preventDefault()
     pageNumber++;
-    getData(e)
+
+    let userSearch = input.value;
+    const res = await axios.get(
+    `https://pixabay.com/api/?key=35513783-cdd32f526a75b86a8cfb6c8f5&q=${userSearch}&image_type=photos&orientation=horizontal&safesearch=true&per_page=40&page=${pageNumber}`);
+    
+    res.data.hits.forEach(item => {
+        const div = document.createElement('div');
+        div.setAttribute('class', 'photo-container');
+        div.innerHTML = `
+    <div class="photo-card">
+        <a href ="${item.webformatURL}" alt="${item.tags}">
+    <img src="${item.webformatURL}" alt="${item.tags}" loading="lazy" /></a> 
+    <div class="info">
+    <p class="info-item">
+    <b>Likes: ${item.likes}</b>
+    </p>
+    <p class="info-item">
+    <b>Views: ${item.views}</b>
+    </p>
+    <p class="info-item">
+    <b>Comments: ${item.comments}</b>
+    </p>
+    <p class="info-item">
+    <b>Downloads: ${item.downloads}</b>
+    </p>
+    </div>
+    </div>`;
+        gallery.style.display = "flex";
+        gallery.style.justifyContent = " space-between";
+        gallery.style.flexWrap = "wrap";
+        gallery.style.margin = "0 auto";
+        gallery.style.width = "1200px"
+        gallery.append(div);
+    
+    });
+    console.log(pageNumber)
+    let hits = res.data.total-=40*pageNumber
+
+        console.log(hits)
+        if (hits > 0) {
+        Notify.info("Hooray we found " + hits + " matches")
+    }
+    if (hits < 0) {
+        Notify.failure("Sorry, there are not more matches.")
+        }
 }
 
 loadButton.addEventListener("click", handleSubmit)
