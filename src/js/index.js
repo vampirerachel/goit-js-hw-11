@@ -37,16 +37,20 @@ loadButton.style.display = "none";
     <img src="${item.webformatURL}" alt="${item.tags}" loading="lazy" /></a> 
     <div class="info">
     <p class="info-item">
-    <b>Likes: ${item.likes}</b>
+    <b>Likes:
+    ${item.likes}</b>
     </p>
     <p class="info-item">
-    <b>Views: ${item.views}</b>
+    <b>Views:
+    ${item.views}</b>
     </p>
     <p class="info-item">
-    <b>Comments: ${item.comments}</b>
+    <b>Comments:
+    ${item.comments}</b>
     </p>
     <p class="info-item">
-    <b>Downloads: ${item.downloads}</b>
+    <b>Downloads:
+    ${item.downloads}</b>
     </p>
     </div>
     </div>`;
@@ -64,11 +68,11 @@ loadButton.style.display = "none";
 
     let hits = res.data.total
 
-    if (hits > 0) {
+    if (hits > 1) {
         Notify.info("Hooray! we found " + hits + " photos!")
         }
-        if (hits = 1) {
-            Notify.info("Horray! we found" + hits + "photo")
+        if (hits === 1) {
+            Notify.info("Horray! we found " + hits + " photo")
         }
     if (hits === 0) {
         Notify.failure("Sorry, there are no images matching your search query. Please try again.")
