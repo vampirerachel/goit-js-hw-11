@@ -72,7 +72,7 @@ loadButton.style.display = "none";
         Notify.info("Hooray! we found " + hits + " photos!")
         }
         if (hits === 1) {
-            Notify.info("Horray! we found " + hits + " photo")
+            Notify.info("Hooray! we found " + hits + " photo")
         }
     if (hits === 0) {
         Notify.failure("Sorry, there are no images matching your search query. Please try again.")
@@ -123,17 +123,15 @@ async function handleSubmit(e) {
     
     })
     };
-
-    let hits = res.data.total-=40*pageNumber
+    let currentPage = pageNumber - 1;
+    let hits = res.data.total-=40*currentPage
         if (hits > 0) {
-        Notify.info("Hooray we found " + hits + " matches")
+        Notify.info("Hooray! we found " + hits + " matches")
     }
     if (hits < 0) {
         Notify.failure("Sorry, there are no more matches.")
     }
-    if (hits > 40) {
-  
-    }
+
 }
 
 loadButton.addEventListener("click", handleSubmit)
