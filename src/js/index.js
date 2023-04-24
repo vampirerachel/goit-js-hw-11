@@ -4,20 +4,28 @@ import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 const formEl = document.querySelector("#search-form");
-const input = document.querySelector('[name ="searchQuery"]')
+let input = document.querySelector('[name ="searchQuery"]')
 const gallery = document.querySelector('.gallery')
 const loadButton = document.querySelector('.load-more')
 const searchButton = document.querySelector("button")
 loadButton.style.display = "none";
-let pageNumber = 0;
+let pageNumber = 1;
 
+    
 async function getData(e) {
     e.preventDefault()
-    pageNumber++;
+    pageNumber = 1;
     loadButton.style.display = "block";
     gallery.innerHTML = "";
     let userSearch = input.value.trim();
-    const res = await axios.get(
+    console.log(userSearch)
+    if (userSearch.length === 0 ) {
+        gallery.setAttribute("class", "hidden")
+        Notify.failure("No matches found.")
+loadButton.style.display = "none";
+    }
+    if(userSearch.length > 0){
+ const res = await axios.get(
     `https://pixabay.com/api/?key=35513783-cdd32f526a75b86a8cfb6c8f5&q=${userSearch}&image_type=photos&orientation=horizontal&safesearch=true&per_page=40&page=${pageNumber}`);
     
     res.data.hits.forEach(item => {
@@ -49,28 +57,34 @@ async function getData(e) {
         gallery.style.width = "1200px"
         gallery.append(div);
     });
-    
+            if (res.data.total < 40) {
+                gallery.style.justifyContent = "space-evenly";
+                loadButton.style.display = "none";
+    }
+
     let hits = res.data.total
 
     if (hits > 0) {
         Notify.info("Hooray we found " + hits + " matches")
     }
     if (hits === 0) {
-        Notify.info("Sorry, there are no images matching your search query. Please try again.")
+        Notify.failure("Sorry, there are no images matching your search query. Please try again.")
 }
-
+}
 }
 
 
 async function handleSubmit(e) {
 
     e.preventDefault()
-    pageNumber++;
 
-    let userSearch = input.value;
+
+    let userSearch = input.value.trim();
+
     const res = await axios.get(
     `https://pixabay.com/api/?key=35513783-cdd32f526a75b86a8cfb6c8f5&q=${userSearch}&image_type=photos&orientation=horizontal&safesearch=true&per_page=40&page=${pageNumber}`);
-    
+
+    if (res.data.total > 40){
     res.data.hits.forEach(item => {
         const div = document.createElement('div');
         div.setAttribute('class', 'photo-container');
@@ -100,7 +114,9 @@ async function handleSubmit(e) {
         gallery.style.width = "1200px"
         gallery.append(div);
     
-    });
+    })
+    };
+
     console.log(pageNumber)
     let hits = res.data.total-=40*pageNumber
 
@@ -109,8 +125,11 @@ async function handleSubmit(e) {
         Notify.info("Hooray we found " + hits + " matches")
     }
     if (hits < 0) {
-        Notify.failure("Sorry, there are not more matches.")
-        }
+        Notify.failure("Sorry, there are no more matches.")
+    }
+        if ( hits > 40) {
+        pageNumber++;
+    }
 }
 
 loadButton.addEventListener("click", handleSubmit)
