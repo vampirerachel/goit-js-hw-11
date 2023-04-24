@@ -65,8 +65,11 @@ loadButton.style.display = "none";
     let hits = res.data.total
 
     if (hits > 0) {
-        Notify.info("Hooray we found " + hits + " matches")
-    }
+        Notify.info("Hooray! we found " + hits + " photos!")
+        }
+        if (hits = 1) {
+            Notify.info("Horray! we found" + hits + "photo")
+        }
     if (hits === 0) {
         Notify.failure("Sorry, there are no images matching your search query. Please try again.")
 }
