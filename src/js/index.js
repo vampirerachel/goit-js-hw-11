@@ -14,11 +14,11 @@ let pageNumber = 1;
     
 async function getData(e) {
     e.preventDefault()
+
     pageNumber = 1;
     loadButton.style.display = "block";
     gallery.innerHTML = "";
     let userSearch = input.value.trim();
-    console.log(userSearch)
     if (userSearch.length === 0 ) {
         gallery.setAttribute("class", "hidden")
         Notify.failure("No matches found.")
@@ -85,7 +85,7 @@ async function handleSubmit(e) {
 
     e.preventDefault()
 
-
+      pageNumber++;
     let userSearch = input.value.trim();
 
     const res = await axios.get(
@@ -124,18 +124,15 @@ async function handleSubmit(e) {
     })
     };
 
-    console.log(pageNumber)
     let hits = res.data.total-=40*pageNumber
-
-        console.log(hits)
         if (hits > 0) {
         Notify.info("Hooray we found " + hits + " matches")
     }
     if (hits < 0) {
         Notify.failure("Sorry, there are no more matches.")
     }
-        if ( hits > 40) {
-        pageNumber++;
+    if (hits > 40) {
+  
     }
 }
 
